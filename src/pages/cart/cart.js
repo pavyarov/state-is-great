@@ -1,43 +1,31 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
+import React, { useContext } from 'react';
 
+import { ShopContext } from '../../context';
 import { Navigation } from '../../components';
-import { removeProductFromCart } from '../../store/actions';
+
 import './cart.css';
 
-const mapStateToProps = state => {
-    return {
-        cartItems: state.cart,
-        cartItemCount: state.cart.length
-    };
-};
+export const Cart = props => {
+    const context = useContext(ShopContext);
 
-const mapDispatchToProps = dispatch => {
-    return {
-        removeProductFromCart: id => dispatch(removeProductFromCart(id))
-    };
+    return (
+        <React.Fragment>
+            <Navigation cartItemNumber={context.cart.length} />
+            <main className="cart">
+                {context.cart.length <= 0 && <p>No Item in the Cart!</p>}
+                <ul>
+                    {context.cart.map(cartItem => (
+                        <li key={cartItem.id}>
+                            <div>
+                                <strong>{cartItem.title}</strong> - ${cartItem.price} ({cartItem.quantity})
+                            </div>
+                            <div>
+                                <button onClick={context.removeProductFromCart.bind(this, cartItem.id)}>Remove from Cart</button>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </main>
+        </React.Fragment>
+    );
 };
-
-export const Cart = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(({ cartItems, cartItemCount, removeProductFromCart }) => (
-    <React.Fragment>
-        <Navigation cartItemNumber={cartItemCount} />
-        <main className="cart">
-            {cartItems.length <= 0 && <p>No Item in the Cart!</p>}
-            <ul>
-                {cartItems.map(cartItem => (
-                    <li key={cartItem.id}>
-                        <div>
-                            <strong>{cartItem.title}</strong> - ${cartItem.price} ({cartItem.quantity})
-                        </div>
-                        <div>
-                            <button onClick={() => removeProductFromCart(cartItem.id)}>Remove from Cart</button>
-                        </div>
-                    </li>
-                ))}
-            </ul>
-        </main>
-    </React.Fragment>
-));

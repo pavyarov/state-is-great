@@ -1,42 +1,29 @@
-import * as React from 'react';
-import { connect } from 'react-redux';
+import React, { useContext } from 'react';
 
 import { Navigation } from '../../components';
-import { addProductToCart } from '../../store/actions';
+import { ShopContext } from '../../context';
 import './products.css';
 
-const mapStateToProps = state => {
-    return {
-        products: state.products,
-        cartItemCount: state.cart.length
-    };
-};
+export const Products = props => {
+    const context = useContext(ShopContext);
 
-const mapDispatchToProps = dispatch => {
-    return {
-        addProductToCart: product => dispatch(addProductToCart(product))
-    };
+    return (
+        <React.Fragment>
+            <Navigation cartItemNumber={context.cart.length} />
+            <main className="products">
+                <ul>
+                    {context.products.map(product => (
+                        <li key={product.id}>
+                            <div>
+                                <strong>{product.title}</strong> - ${product.price}
+                            </div>
+                            <div>
+                                <button onClick={context.addProductToCart.bind(this, product)}>Add to Cart</button>
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            </main>
+        </React.Fragment>
+    );
 };
-
-export const Products = connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(({ products, cartItemCount, addProductToCart }) => (
-    <React.Fragment>
-        <Navigation cartItemNumber={cartItemCount} />
-        <main className="products">
-            <ul>
-                {products.map(product => (
-                    <li key={product.id}>
-                        <div>
-                            <strong>{product.title}</strong> - ${product.price}
-                        </div>
-                        <div>
-                            <button onClick={() => addProductToCart(product)}>Add to Cart</button>
-                        </div>
-                    </li>
-                ))}
-            </ul>
-        </main>
-    </React.Fragment>
-));
